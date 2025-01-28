@@ -1,31 +1,36 @@
 import React from "react";
 import '../task/task.css';
+import { formatDistanceToNow } from 'date-fns';
+import PropTypes from 'prop-types';
+
 
 export default class Task extends React.Component {
+  static defaultProps = {
+    label: '',
+    completed: false,
+    editing: false,
+    createdDate: new Date()
+};
 
-  constructor () {
-    super();
-
-    this.state = {completed: false}
-
-    this.onLableClick = () => {
-      this.setState ((state) => {
-        return {
-          completed: !state.completed
-        }
-      })
-    }
-  }
+static propTypes = {
+    label: PropTypes.string.isRequired,
+    onDeleted: PropTypes.func.isRequired,
+    onToggleCompleted: PropTypes.func.isRequired,
+    completed: PropTypes.bool,
+    editing: PropTypes.bool,
+    createdDate: PropTypes.instanceOf(Date)
+};
 
   
   
   render() {
-    const {label, onDeleted} = this.props;
-    const {completed} = this.state;
+    const {label, onDeleted, onToggleCompleted, completed, createdDate} = this.props;
+    
     return (
       <div className={`task ${completed ? 'completed' : ''}`}  
-      onClick = {this.onLableClick} >
+       >
       <div className="view " >
+        <div onClick = {onToggleCompleted}>
         <input
           className="toggle"
           type="checkbox"
@@ -34,8 +39,9 @@ export default class Task extends React.Component {
         />
         <label>
           <span className="description">{label}</span>
-          <span className="created">created 17 seconds ago</span>
+          <span className="created">created {formatDistanceToNow(new Date(createdDate))} ago</span>
         </label>
+        </div>
         <button className="icon icon-edit"></button>
         <button
           className="icon icon-destroy"
