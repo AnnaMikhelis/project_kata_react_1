@@ -1,45 +1,47 @@
-import React from "react";
-import '../tasks-filter/tasks-filter.css'
+import React from 'react';
+import PropTypes from 'prop-types';
+import "./tasks-filter.css";
 
-export default class TasksFilter extends React.Component {
 
-  render() {
+const TasksFilter = ({ currentFilter, setFilter }) => (
+  <ul className="filters">
+    <li>
+      <button
+        type="button" 
+        className={currentFilter === 'all' ? 'selected' : ''}
+        onClick={() => setFilter('all')}
+        aria-label="Show all tasks"
+      >
+        All
+      </button>
+    </li>
+    <li>
+      <button
+        type="button" 
+        className={currentFilter === 'active' ? 'selected' : ''}
+        onClick={() => setFilter('active')}
+        aria-label="Show active tasks"
+      >
+        Active
+      </button>
+    </li>
+    <li>
+      <button
+        type="button" 
+        className={currentFilter === 'completed' ? 'selected' : ''}
+        onClick={() => setFilter('completed')}
+        aria-label="Show completed tasks"
+      >
+        Completed
+      </button>
+    </li>
+  </ul>
+);
 
-    const { currentFilter, setFilter } = this.props;
 
-    return (
-              <ul className="filters">
-                  <li>
-                    <button className={currentFilter === 'all' ? 'selected' : ''} 
-                        onClick={() => setFilter('all')}>All</button>
-                  </li>
-                  <li>
-                    <button className={currentFilter === 'active' ? 'selected' : ''} 
-                        onClick={() => setFilter('active')}>Active</button>
-                  </li>
-                  <li>
-                    <button className={currentFilter === 'completed' ? 'selected' : ''} 
-                        onClick={() => setFilter('completed')}>Completed</button>
-                  </li>
-                </ul>
-          )
-  }
-}
+TasksFilter.propTypes = {
+  currentFilter: PropTypes.oneOf(['all', 'active', 'completed']).isRequired,
+  setFilter: PropTypes.func.isRequired,
+};
 
-// const TasksFilter = () => {
-//     return (
-//         <ul className="filters">
-//             <li>
-//               <button className="selected">All</button>
-//             </li>
-//             <li>
-//               <button>Active</button>
-//             </li>
-//             <li>
-//               <button>Completed</button>
-//             </li>
-//           </ul>
-//     )
-// };
-
-// export default TasksFilter;
+export default TasksFilter;
