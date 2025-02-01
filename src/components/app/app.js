@@ -13,9 +13,7 @@ export default class TodoApp extends React.Component {
     this.maxId = 100;
     this.state = {
       todoData: [
-        this.createTask('Выполненная задача'),
-        this.createTask('Редактируемая задача'),
-        this.createTask('Обычная задача'),
+        
       ],
       filter: 'all', // all active completed
     };
