@@ -1,27 +1,32 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import "./new-task-form.css";
 
 export default class NewTaskForm extends Component {
-  constructor() {
+  constructor() { 
     super();
     this.state = {
       label: '',
     };
+
   }
 
-  onLableChange = (e) => {
+  onLabelChange = (e) => {
     this.setState({
       label: e.target.value,
     });
   };
 
   onSubmit = (e) => {
-    const { onAdd, label } = this.props;
+    const { onAdd } = this.props; 
     e.preventDefault();
-    onAdd(label);
-    this.setState({
-      label: '',
-    });
+    const { label } = this.state; 
+    if (label.trim()) {
+      onAdd(label); 
+      this.setState({
+        label: '', 
+      });
+    }
   };
 
   render() {
@@ -31,10 +36,14 @@ export default class NewTaskForm extends Component {
         <input
           className="new-todo"
           placeholder="What needs to be done?"
-          onChange={this.onLableChange}
+          onChange={this.onLabelChange}
           value={label}
         />
       </form>
     );
   }
 }
+
+NewTaskForm.propTypes = {
+  onAdd: PropTypes.func.isRequired,
+};

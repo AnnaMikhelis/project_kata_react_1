@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import "./task.css";
+import './task.css';
 import { formatDistanceToNow } from 'date-fns';
 
 const Task = ({
@@ -9,8 +9,20 @@ const Task = ({
   onToggleCompleted,
   completed,
   createdDate,
-  editing,
+  id,
+  onEdit,
 }) => {
+  const [isEditing, setIsEditing] = useState(false); 
+  const [newLabel, setNewLabel] = useState(label); 
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    if (newLabel.trim()) {
+      onEdit(id, newLabel); 
+      setIsEditing(false); 
+    }
+  };
+
   return (
     <div className={`task ${completed ? 'completed' : ''}`}>
       <div className="view">
@@ -34,35 +46,51 @@ const Task = ({
           </label>
         </button>
 
-        <button className="icon icon-edit" type="button" aria-label="Edit task" />
+        {completed || !isEditing ? (
+          <button
+            className="icon icon-edit"
+            type="button"
+            onClick={() => setIsEditing(true)} 
+            aria-label="Edit task"
+          />
+        ) : null}
+
         <button
           className="icon icon-destroy"
           type="button"
           onClick={onDeleted}
           aria-label="Delete task"
         />
-
       </div>
-      {editing && (
-        <input type="text" className="edit" value={label} />
+
+      {isEditing && (
+        <form onSubmit={handleEditSubmit}>
+          <input
+            type="text"
+            className="edit"
+            value={newLabel}
+            onChange={(e) => setNewLabel(e.target.value)}
+            placeholder="Edit task"
+          />
+        </form>
       )}
     </div>
   );
 };
 
-Task.defaultProps = {
-  completed: false,
-  editing: false,
-  createdDate: new Date(),
-};
-
 Task.propTypes = {
-  label: PropTypes.string.isRequired, 
+  label: PropTypes.string.isRequired,
   onDeleted: PropTypes.func.isRequired,
   onToggleCompleted: PropTypes.func.isRequired,
   completed: PropTypes.bool,
-  editing: PropTypes.bool,
   createdDate: PropTypes.instanceOf(Date),
+  id: PropTypes.number.isRequired,
+  onEdit: PropTypes.func.isRequired, 
+};
+
+Task.defaultProps = {
+  completed: false,
+  createdDate: new Date(),
 };
 
 export default Task;

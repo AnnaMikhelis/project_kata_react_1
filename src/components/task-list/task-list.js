@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 import Task from '../task/task';
 import "./task-list.css";
 
-function TaskList({ todos, onDeleted, onToggleCompleted }) {
+function TaskList({ todos, onDeleted, onToggleCompleted, onEdit }) {
   const elements = todos.map((item) => {
     return (
       <li key={item.id}>
         <Task
           label={item.label}
           completed={item.completed}
-          editing={item.editing}
           createdDate={item.createdDate}
           id={item.id}
           onDeleted={() => onDeleted(item.id)}
           onToggleCompleted={() => onToggleCompleted(item.id)}
+          onEdit={onEdit} 
         />
       </li>
     );
@@ -28,12 +28,12 @@ TaskList.propTypes = {
       id: PropTypes.number.isRequired,
       label: PropTypes.string.isRequired,
       completed: PropTypes.bool,
-      editing: PropTypes.bool,
       createdDate: PropTypes.instanceOf(Date),
     }),
   ).isRequired,
   onDeleted: PropTypes.func.isRequired,
   onToggleCompleted: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired, 
 };
 
 export default TaskList;

@@ -1,21 +1,18 @@
 /* eslint-disable class-methods-use-this */
 import React from 'react';
-
 import NewTaskForm from '../new-task-form/new-task-form';
 import TaskList from '../task-list/task-list';
 import Footer from '../footer/footer';
 import '../global.css';
-import "./app.css";
+import './app.css';
 
 export default class TodoApp extends React.Component {
   constructor() {
     super();
     this.maxId = 100;
     this.state = {
-      todoData: [
-        
-      ],
-      filter: 'all', // all active completed
+      todoData: [],
+      filter: 'all',
     };
   }
 
@@ -52,6 +49,22 @@ export default class TodoApp extends React.Component {
       const idx = todoData.findIndex((el) => el.id === id);
       const oldTask = todoData[idx];
       const newTask = { ...oldTask, completed: !oldTask.completed };
+      const newArray = [
+        ...todoData.slice(0, idx),
+        newTask,
+        ...todoData.slice(idx + 1),
+      ];
+      return {
+        todoData: newArray,
+      };
+    });
+  };
+
+  onEdit = (id, newLabel) => {
+    this.setState(({ todoData }) => {
+      const idx = todoData.findIndex((el) => el.id === id);
+      const oldTask = todoData[idx];
+      const newTask = { ...oldTask, label: newLabel };
       const newArray = [
         ...todoData.slice(0, idx),
         newTask,
@@ -101,6 +114,7 @@ export default class TodoApp extends React.Component {
           todos={visibleTasks}
           onDeleted={this.deleteTask}
           onToggleCompleted={this.onToggleCompleted}
+          onEdit={this.onEdit} 
         />
         <Footer
           left={left}
@@ -112,4 +126,3 @@ export default class TodoApp extends React.Component {
     );
   }
 }
-
