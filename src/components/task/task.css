@@ -93,3 +93,14 @@
 .task .icon-edit:after {
   content: '✎';
 }
+
+.task .edit {
+  width: 100%; 
+  font-size: 24px; 
+  padding: 5px; 
+  box-sizing: border-box; 
+  margin-top: 0; 
+}
+.task .edit:focus {
+  outline: none; 
+}
