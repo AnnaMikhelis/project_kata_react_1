@@ -104,3 +104,22 @@
 .task .edit:focus {
   outline: none; 
 }
+
+.timer-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-spent {
+  font-size: 13px;
+  color: gray;
+}
+
+.icon-pause:after {
+  content: '⏸';
+}
+
+.icon-play:after {
+  content: '▶';
+}

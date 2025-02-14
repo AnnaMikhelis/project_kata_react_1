@@ -12,13 +12,10 @@ export default class TodoApp extends React.Component {
     this.maxId = 100;
     this.state = {
       todoData: [],
-      filter: 'all',
+      filter: 'all', // all active completed
     };
+    this.timers = {}; // Объект для хранения интервалов таймеров
   }
-
-  setFilter = (filter) => {
-    this.setState({ filter });
-  };
 
   createTask = (label) => ({
     label,
@@ -26,6 +23,8 @@ export default class TodoApp extends React.Component {
     editing: false,
     id: this.maxId++,
     createdDate: new Date(),
+    timeSpent: 0, // Поле для учета времени
+    isTimerRunning: false, // Флаг состояния таймера
   });
 
   deleteTask = (id) => {
@@ -76,6 +75,79 @@ export default class TodoApp extends React.Component {
     });
   };
 
+  startTimer = (id) => {
+    this.setState(({ todoData }) => {
+      const idx = todoData.findIndex((el) => el.id === id);
+      const oldTask = todoData[idx];
+      const newTask = {
+        ...oldTask,
+        isTimerRunning: true,
+        startTime: Date.now(), // Сохраняем время начала таймера
+      };
+      const newArray = [
+        ...todoData.slice(0, idx),
+        newTask,
+        ...todoData.slice(idx + 1),
+      ];
+
+      // Запускаем интервал для обновления времени
+      this.timers[id] = setInterval(() => {
+        this.updateTimeSpent(id);
+      }, 1000);
+
+      return {
+        todoData: newArray,
+      };
+    });
+  };
+
+  pauseTimer = (id) => {
+    this.setState(({ todoData }) => {
+      const idx = todoData.findIndex((el) => el.id === id);
+      const oldTask = todoData[idx];
+      const elapsedTime = Date.now() - oldTask.startTime; // Вычисляем прошедшее время
+      const newTask = {
+        ...oldTask,
+        isTimerRunning: false,
+        timeSpent: oldTask.timeSpent + elapsedTime, // Обновляем общее время
+      };
+      const newArray = [
+        ...todoData.slice(0, idx),
+        newTask,
+        ...todoData.slice(idx + 1),
+      ];
+
+      // Очищаем интервал для данного таймера
+      clearInterval(this.timers[id]);
+      delete this.timers[id]; // Удаляем интервал из объекта
+
+      return {
+        todoData: newArray,
+      };
+    });
+  };
+
+  updateTimeSpent = (id) => {
+    this.setState(({ todoData }) => {
+      const idx = todoData.findIndex((el) => el.id === id);
+      const oldTask = todoData[idx];
+      const elapsedTime = Date.now() - oldTask.startTime; // Вычисляем прошедшее время
+      const newTask = {
+        ...oldTask,
+        timeSpent: oldTask.timeSpent + elapsedTime, // Обновляем общее время
+        startTime: Date.now(), // Обновляем время начала
+      };
+      const newArray = [
+        ...todoData.slice(0, idx),
+        newTask,
+        ...todoData.slice(idx + 1),
+      ];
+      return {
+        todoData: newArray,
+      };
+    });
+  };
+
   onAdd = (text) => {
     this.setState(({ todoData }) => {
       const newTask = this.createTask(text);
@@ -114,7 +186,9 @@ export default class TodoApp extends React.Component {
           todos={visibleTasks}
           onDeleted={this.deleteTask}
           onToggleCompleted={this.onToggleCompleted}
-          onEdit={this.onEdit} 
+          onEdit={this.onEdit}
+          onStartTimer={(id) => this.startTimer(id)} // Передаем callback для старта таймера
+          onPauseTimer={(id) => this.pauseTimer(id)} // Передаем callback для паузы таймера
         />
         <Footer
           left={left}
