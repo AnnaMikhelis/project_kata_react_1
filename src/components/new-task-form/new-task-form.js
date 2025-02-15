@@ -1,31 +1,25 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import "./new-task-form.css";
+import './new-task-form.css';
 
 export default class NewTaskForm extends Component {
-  constructor() { 
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       label: '',
     };
-
   }
 
   onLabelChange = (e) => {
-    this.setState({
-      label: e.target.value,
-    });
+    this.setState({ label: e.target.value });
   };
 
   onSubmit = (e) => {
-    const { onAdd } = this.props; 
     e.preventDefault();
-    const { label } = this.state; 
+    const { label } = this.state;
     if (label.trim()) {
-      onAdd(label); 
-      this.setState({
-        label: '', 
-      });
+      // eslint-disable-next-line react/destructuring-assignment
+      this.props.onAdd(label); 
+      this.setState({ label: '' }); 
     }
   };
 
@@ -44,6 +38,3 @@ export default class NewTaskForm extends Component {
   }
 }
 
-NewTaskForm.propTypes = {
-  onAdd: PropTypes.func.isRequired,
-};

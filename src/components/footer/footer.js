@@ -1,15 +1,21 @@
 import React from 'react';
-
 import PropTypes from 'prop-types';
 import TasksFilter from '../tasks-filter/tasks-filter';
-import "./footer.css";
+import './footer.css';
 
 function Footer({ left, filter, setFilter, onClearCompleted }) {
   return (
     <footer className="footer">
-      <span className="todo-count">{left} items left</span>
+      <span className="todo-count">
+        {left} item{left !== 1 && 's'} left
+      </span>
       <TasksFilter currentFilter={filter} setFilter={setFilter} />
-      <button type = 'button' className="clear-completed" onClick={onClearCompleted}>
+      <button
+        type="button"
+        className="clear-completed"
+        onClick={onClearCompleted}
+        aria-label="Clear completed tasks"
+      >
         Clear completed
       </button>
     </footer>

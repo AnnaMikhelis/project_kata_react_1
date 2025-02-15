@@ -11,16 +11,15 @@ const Task = ({
   createdDate,
   id,
   onEdit,
-  timeSpent, // Пропс для времени, проведенного над задачей
-  isTimerRunning, // Пропс для состояния таймера
-  onStartTimer, // Callback для запуска таймера
-  onPauseTimer, // Callback для паузы таймера // Callback для обновления времени
+  timeSpent,
+  isTimerRunning,
+  onStartTimer,
+  onPauseTimer,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newLabel, setNewLabel] = useState(label);
 
-  const handleEditSubmit = (e) => {
-    e.preventDefault();
+  const handleEditSubmit = () => {
     if (newLabel.trim()) {
       onEdit(id, newLabel);
       setIsEditing(false);
@@ -34,7 +33,7 @@ const Task = ({
           <button
             className="toggle-button"
             type="button"
-            onClick={onToggleCompleted}
+            onClick={() => onToggleCompleted(id)}
             aria-label="Toggle task completion"
           >
             <input
@@ -51,7 +50,6 @@ const Task = ({
             </label>
           </button>
 
-          {/* Кнопка редактирования */}
           <button
             className="icon icon-edit"
             type="button"
@@ -59,15 +57,13 @@ const Task = ({
             aria-label="Edit task"
           />
 
-          {/* Кнопка удаления */}
           <button
             className="icon icon-destroy"
             type="button"
-            onClick={onDeleted}
+            onClick={() => onDeleted(id)}
             aria-label="Delete task"
           />
 
-          {/* Отображение времени и кнопки управления таймером */}
           <div className="timer-controls">
             <span className="time-spent">
               {Math.floor(timeSpent / 1000)} sec
@@ -91,15 +87,19 @@ const Task = ({
         </div>
       )}
 
-      {/* Поле редактирования */}
       {isEditing && (
-        <form onSubmit={handleEditSubmit}>
+        <form onSubmit={(e) => e.preventDefault()}>
           <input
             type="text"
             className="edit"
             value={newLabel}
             onChange={(e) => setNewLabel(e.target.value)}
             placeholder="Edit task"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleEditSubmit();
+              }
+            }}
           />
         </form>
       )}
@@ -115,18 +115,17 @@ Task.propTypes = {
   createdDate: PropTypes.instanceOf(Date),
   id: PropTypes.number.isRequired,
   onEdit: PropTypes.func.isRequired,
-  timeSpent: PropTypes.number, // Добавляем проверку для timeSpent
-  isTimerRunning: PropTypes.bool, // Добавляем проверку для isTimerRunning
-  onStartTimer: PropTypes.func.isRequired, // Добавляем проверку для onStartTimer
-  onPauseTimer: PropTypes.func.isRequired, // Добавляем проверку для onPauseTimer
-  // Добавляем проверку для updateTimeSpent
+  timeSpent: PropTypes.number, 
+  isTimerRunning: PropTypes.bool, 
+  onStartTimer: PropTypes.func.isRequired, 
+  onPauseTimer: PropTypes.func.isRequired, 
 };
 
 Task.defaultProps = {
   completed: false,
   createdDate: new Date(),
-  timeSpent: 0, // Устанавливаем начальное значение времени
-  isTimerRunning: false, // Устанавливаем начальное состояние таймера
+  timeSpent: 0, 
+  isTimerRunning: false, 
 };
 
 export default Task;
