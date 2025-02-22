@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './task.css';
 import { formatDistanceToNow } from 'date-fns';
@@ -11,45 +11,119 @@ const Task = ({
   createdDate,
   id,
   onEdit,
-  timeSpent,
-  isTimerRunning,
-  onStartTimer,
-  onPauseTimer,
+  totalTime,
+  timeSpent: initialTimeSpent,
+  isTimerRunning: initialIsTimerRunning,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newLabel, setNewLabel] = useState(label);
+  const [timeSpent, setTimeSpent] = useState(initialTimeSpent);
+  const [isTimerRunning, setIsTimerRunning] = useState(initialIsTimerRunning);
+
+  let timer = null;
+
+  useEffect(() => {
+    if (isTimerRunning) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      timer = setInterval(() => {
+        setTimeSpent((prevTimeSpent) => prevTimeSpent + 1);
+      }, 1000);
+    } else {
+      clearInterval(timer);
+    }
+    return () => clearInterval(timer);
+  }, [isTimerRunning]);
 
   const handleEditSubmit = () => {
     if (newLabel.trim()) {
-      onEdit(id, newLabel);
+      onEdit(id, newLabel); 
       setIsEditing(false);
     }
+  };
+
+  const formatTime = (time) => {
+    if (time === null) return ''; 
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes}:${String(seconds).padStart(2, '0')}`;
+  };
+
+  const startTimer = () => {
+    setIsTimerRunning(true);
+  };
+
+  const pauseTimer = () => {
+    setIsTimerRunning(false);
+  };
+
+
+  const remainingTime = totalTime !== null ? totalTime - timeSpent : null;
+  const getTimeDisplay = () => {
+    if (totalTime === null) return null;
+    if (remainingTime >= 0) {
+      return `${formatTime(remainingTime)} left`;
+    }
+    return null;
   };
 
   return (
     <div className={`task ${completed ? 'completed' : ''}`}>
       {!isEditing && (
         <div className="view">
+          
           <button
-            className="toggle-button"
-            type="button"
-            onClick={() => onToggleCompleted(id)}
-            aria-label="Toggle task completion"
-          >
-            <input
-              className="toggle"
-              type="checkbox"
-              checked={completed}
-              readOnly
-            />
-            <label htmlFor="task-description">
-              <span className="description">{label}</span>
-              <span className="created">
-                created {formatDistanceToNow(new Date(createdDate))} ago
-              </span>
-            </label>
-          </button>
+  className="toggle-button"
+  type="button"
+  onClick={() => onToggleCompleted(id)}
+  aria-label="Toggle task completion"
+>
+  <input
+    id={`toggle-${id}`} 
+    className="toggle"
+    type="checkbox"
+    checked={completed}
+    readOnly
+  />
+  <label htmlFor={`toggle-${id}`}> 
+    {/* */}
+  </label>
+</button>
 
+          
+          <label htmlFor="task-description">
+            <span className="title">{label}</span>
+          </label>
+
+          
+          {totalTime !== null && (
+            <div className="timer-controls">
+              {isTimerRunning ? (
+                <button
+                  className="icon icon-pause"
+                  type="button"
+                  onClick={pauseTimer}
+                  aria-label="Pause timer"
+                />
+              ) : (
+                <button
+                  className="icon icon-play"
+                  type="button"
+                  onClick={startTimer}
+                  aria-label="Start timer"
+                />
+              )}
+            </div>
+          )}
+
+          
+          <span className="time-spent">{getTimeDisplay()}</span>
+
+          
+          <span className="created">
+            created {formatDistanceToNow(new Date(createdDate))} ago
+          </span>
+
+          
           <button
             className="icon icon-edit"
             type="button"
@@ -57,36 +131,17 @@ const Task = ({
             aria-label="Edit task"
           />
 
+          
           <button
             className="icon icon-destroy"
             type="button"
             onClick={() => onDeleted(id)}
             aria-label="Delete task"
           />
-
-          <div className="timer-controls">
-            <span className="time-spent">
-              {Math.floor(timeSpent / 1000)} sec
-            </span>
-            {isTimerRunning ? (
-              <button
-                className="icon icon-pause"
-                type="button"
-                onClick={() => onPauseTimer(id)}
-                aria-label="Pause timer"
-              />
-            ) : (
-              <button
-                className="icon icon-play"
-                type="button"
-                onClick={() => onStartTimer(id)}
-                aria-label="Start timer"
-              />
-            )}
-          </div>
         </div>
       )}
 
+      
       {isEditing && (
         <form onSubmit={(e) => e.preventDefault()}>
           <input
@@ -115,15 +170,15 @@ Task.propTypes = {
   createdDate: PropTypes.instanceOf(Date),
   id: PropTypes.number.isRequired,
   onEdit: PropTypes.func.isRequired,
+  totalTime: PropTypes.number, 
   timeSpent: PropTypes.number, 
   isTimerRunning: PropTypes.bool, 
-  onStartTimer: PropTypes.func.isRequired, 
-  onPauseTimer: PropTypes.func.isRequired, 
 };
 
 Task.defaultProps = {
   completed: false,
   createdDate: new Date(),
+  totalTime: null, 
   timeSpent: 0, 
   isTimerRunning: false, 
 };

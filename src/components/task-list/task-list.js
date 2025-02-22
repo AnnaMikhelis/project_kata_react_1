@@ -7,9 +7,9 @@ function TaskList({
   todos,
   onDeleted,
   onToggleCompleted,
-  onEdit,
   onStartTimer,
   onPauseTimer,
+  onEdit,
 }) {
   const elements = todos.map((item) => {
     return (
@@ -22,10 +22,11 @@ function TaskList({
           onDeleted={onDeleted}
           onToggleCompleted={onToggleCompleted}
           onEdit={onEdit}
-          timeSpent={item.timeSpent}
-          isTimerRunning={item.isTimerRunning}
           onStartTimer={onStartTimer}
           onPauseTimer={onPauseTimer}
+          totalTime={item.totalTime} 
+          timeSpent={item.timeSpent} 
+          isTimerRunning={item.isTimerRunning} 
         />
       </li>
     );
@@ -41,15 +42,15 @@ TaskList.propTypes = {
       label: PropTypes.string.isRequired,
       completed: PropTypes.bool,
       createdDate: PropTypes.instanceOf(Date),
+      totalTime: PropTypes.number, 
       timeSpent: PropTypes.number.isRequired, 
       isTimerRunning: PropTypes.bool.isRequired, 
     }),
   ).isRequired,
   onDeleted: PropTypes.func.isRequired,
   onToggleCompleted: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
-  onStartTimer: PropTypes.func.isRequired, 
-  onPauseTimer: PropTypes.func.isRequired, 
+  onStartTimer: PropTypes.func.isRequired,
+  onPauseTimer: PropTypes.func.isRequired,
 };
 
 export default TaskList;
