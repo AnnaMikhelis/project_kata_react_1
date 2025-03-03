@@ -1,102 +1,90 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './new-task-form.css';
 
-export default class NewTaskForm extends Component {
-  constructor({ onAdd }) { 
-    super();
-    this.state = {
-      label: '',
-      minutes: '', 
-      seconds: '', 
-    };
+export default function NewTaskForm({ onAdd }) {
+  const [label, setLabel] = useState('');
+  const [minutes, setMinutes] = useState('');
+  const [seconds, setSeconds] = useState('');
 
-    this.onAdd = onAdd; 
-  }
-
-  onLabelChange = (e) => {
-    this.setState({ label: e.target.value });
+  const handleLabelChange = (e) => {
+    setLabel(e.target.value);
   };
 
-  onMinutesChange = (e) => {
+  const handleMinutesChange = (e) => {
     const value = Math.max(0, parseInt(e.target.value, 10)) || '';
-    this.setState({ minutes: value });
+    setMinutes(value);
   };
 
-  onSecondsChange = (e) => {
+  const handleSecondsChange = (e) => {
     const value = Math.max(0, parseInt(e.target.value, 10)) || '';
-    this.setState({ seconds: value });
+    setSeconds(value);
   };
 
-  onSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const { label, minutes, seconds } = this.state;
 
     if (label.trim()) {
       let totalTimeInSeconds = 0;
 
-      
       if (minutes !== '') {
         totalTimeInSeconds += parseInt(minutes, 10) * 60;
       }
 
-      
       if (seconds !== '') {
         totalTimeInSeconds += parseInt(seconds, 10);
       }
 
-      
       if (totalTimeInSeconds === 0 && minutes === '' && seconds === '') {
         totalTimeInSeconds = null;
       }
 
-      this.onAdd(label, totalTimeInSeconds);
-      this.setState({
-        label: '',
-        minutes: '',
-        seconds: '',
-      });
+      onAdd(label, totalTimeInSeconds);
+
+      // Сброс состояния после отправки формы
+      setLabel('');
+      setMinutes('');
+      setSeconds('');
     }
   };
 
-  handleKeyPress = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
       event.preventDefault();
-      this.onSubmit(event);  
-      }
-    };
+      handleSubmit(event);
+    }
+  };
 
-  render() {
-    const { label, minutes, seconds } = this.state;
-
-    return (
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-      <form className="new-todo-form" type="submit" onSubmit={this.onSubmit} onKeyDown={this.handleKeyPress}>
-        <input
-          type="text"
-          className="new-todo"
-          placeholder="What needs to be done?"
-          onChange={this.onLabelChange}
-          value={label}
-        
-        />
-        <input
-          type="text"
-          className="new-todo-form__timer"
-          placeholder="min"
-          onChange={this.onMinutesChange}
-          value={minutes}
-        />
-        <input
-          type="text"
-          className="new-todo-form__timer"
-          placeholder="sec"
-          onChange={this.onSecondsChange}
-          value={seconds}
-        />
-      </form>
-    );
-  }
+  return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+    <form
+      className="new-todo-form"
+      onSubmit={handleSubmit}
+      onKeyDown={handleKeyPress}
+    >
+      <input
+        type="text"
+        className="new-todo"
+        placeholder="What needs to be done?"
+        onChange={handleLabelChange}
+        value={label}
+      />
+      <input
+        type="text"
+        className="new-todo-form__timer"
+        placeholder="min"
+        onChange={handleMinutesChange}
+        value={minutes}
+      />
+      <input
+        type="text"
+        className="new-todo-form__timer"
+        placeholder="sec"
+        onChange={handleSecondsChange}
+        value={seconds}
+      />
+    </form>
+  );
 }
 
 NewTaskForm.propTypes = {
